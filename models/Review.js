@@ -32,6 +32,23 @@ const reviewSchema = new mongoose.Schema(
       required: [true, 'Review description is required'],
       trim: true,
       maxlength: [5000, 'Review is too long']
+    },
+
+    // Optional details used by the diary page.
+    type: {
+      type: String,
+      enum: ['movie', 'show'],
+      default: 'movie'
+    },
+
+    year: {
+      type: Number,
+      min: [1870, 'Year looks wrong'],
+      max: [2100, 'Year looks wrong']
+    },
+
+    watchedOn: {
+      type: Date
     }
   },
   {
