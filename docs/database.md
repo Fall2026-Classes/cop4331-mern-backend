@@ -246,7 +246,15 @@ const { User, Review } = require('./models');
 | PATCH | `/api/reviews/:id` | Update an existing review |
 | DELETE | `/api/reviews/:id` | Delete a review |
 
-These are the proposed integration endpoints. Their final definitions should be agreed upon with the backend team.
+The review endpoints are implemented in `routes/reviews.js`.
+
+### Authentication
+
+`POST /api/auth/login` returns the user record plus a signed `token`. Send it
+on every review request as `Authorization: Bearer <token>`. Review endpoints
+return `401` without a valid token, take the author from the token, and answer
+`404` for reviews owned by someone else. Set `JWT_SECRET` in the environment
+(required when `NODE_ENV=production`).
 
 ### Review Creation Request
 

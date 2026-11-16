@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const { User } = require('./models');
+const { signToken } = require('./middleware/auth');
+const reviewsRouter = require('./routes/reviews');
 
 require('dotenv').config();
 
@@ -54,7 +56,7 @@ app.post('/api/users', async (req, res) => {
 
 // Log in an existing user.
 // In:  { login, password }
-// Out: 200 user record | 401 { error }
+// Out: 200 user record plus a signed `token` | 401 { error }
 // DB:  User.findOne({ login }) with the password hash selected, then checkPassword()
 app.post('/api/auth/login', async (req, res) => {
   const { login, password } = req.body || {};
@@ -70,11 +72,14 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid login or password' });
     }
 
-    res.status(200).json(user);
+    res.status(200).json({ ...user.toJSON(), token: signToken(user) });
   } catch (error) {
     res.status(500).json({ error: 'Login failed' });
   }
 });
+
+// Reviews (all routes require a valid token).
+app.use('/api/reviews', reviewsRouter);
 
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI;
