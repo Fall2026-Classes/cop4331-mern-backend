@@ -21,6 +21,18 @@ const userSchema = new mongoose.Schema(
       select: false
     },
 
+    firstName: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'First name cannot exceed 50 characters']
+    },
+
+    lastName: {
+      type: String,
+      trim: true,
+      maxlength: [50, 'Last name cannot exceed 50 characters']
+    },
+
     role: {
       type: String,
       enum: ['user', 'admin'],

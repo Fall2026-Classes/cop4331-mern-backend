@@ -29,6 +29,8 @@ The application currently uses two MongoDB collections: `users` and `reviews`.
 | `_id` | ObjectId | Automatically generated |
 | `login` | String | Required, unique, 3–30 characters |
 | `password` | String | Required, bcrypt-hashed, excluded from default queries |
+| `firstName` | String | Optional, maximum 50 characters |
+| `lastName` | String | Optional, maximum 50 characters |
 | `role` | String | `user` or `admin`, defaults to `user` |
 | `createdAt` | Date | Automatically generated |
 | `updatedAt` | Date | Automatically updated |
@@ -51,6 +53,9 @@ The application currently uses two MongoDB collections: `users` and `reviews`.
 | `movieTitle` | String | Required, maximum 200 characters |
 | `rating` | Number | Required, 0–5 in increments of 0.5 |
 | `description` | String | Required, maximum 5,000 characters |
+| `type` | String | `movie` or `show`, defaults to `movie` |
+| `year` | Number | Optional, 1870–2100 |
+| `watchedOn` | Date | Optional |
 | `createdAt` | Date | Automatically generated |
 | `updatedAt` | Date | Automatically updated |
 

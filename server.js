@@ -21,11 +21,11 @@ app.get('/api/ping', (req, res) => {
 });
 
 // Register a new user.
-// In:  { login, password }
+// In:  { login, password, firstName?, lastName? }
 // Out: 201 { message, user } | 400 invalid input | 409 login taken
 // DB:  User.create() -> insertOne into users (password hashed by the model)
 app.post('/api/users', async (req, res) => {
-  const { login, password } = req.body || {};
+  const { login, password, firstName, lastName } = req.body || {};
 
   if (typeof login !== 'string' || typeof password !== 'string' || !password) {
     return res.status(400).json({
@@ -34,8 +34,8 @@ app.post('/api/users', async (req, res) => {
   }
 
   try {
-    // Only login and password are accepted, so clients cannot set role.
-    const user = await User.create({ login, password });
+    // Only login, password and the optional names are accepted, so clients cannot set role.
+    const user = await User.create({ login, password, firstName, lastName });
 
     res.status(201).json({
       message: 'User registered successfully',

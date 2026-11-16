@@ -219,3 +219,60 @@ describe('DELETE /api/reviews/:id', () => {
     expect(await Review.countDocuments()).toBe(1);
   });
 });
+
+describe('diary fields', () => {
+  test('defaults type to movie and stores optional year and watched date', async () => {
+    const plain = await request(app).post('/api/reviews').set(auth(tokenA)).send(validReview);
+    expect(plain.body.type).toBe('movie');
+
+    const full = await request(app)
+      .post('/api/reviews')
+      .set(auth(tokenA))
+      .send({ ...validReview, type: 'show', year: 2008, watchedOn: '2026-11-01' });
+
+    expect(full.status).toBe(201);
+    expect(full.body.type).toBe('show');
+    expect(full.body.year).toBe(2008);
+    expect(full.body.watchedOn).toContain('2026-11-01');
+  });
+
+  test('accepts rating 0 for an unrated entry and clears year with null', async () => {
+    const created = await request(app)
+      .post('/api/reviews')
+      .set(auth(tokenA))
+      .send({ ...validReview, rating: 0, year: 2010 });
+    expect(created.status).toBe(201);
+
+    const res = await request(app)
+      .patch(`/api/reviews/${created.body._id}`)
+      .set(auth(tokenA))
+      .send({ year: null });
+    expect(res.status).toBe(200);
+    expect(res.body.year == null).toBe(true);
+  });
+
+  test('rejects an unknown type with 400', async () => {
+    const res = await request(app)
+      .post('/api/reviews')
+      .set(auth(tokenA))
+      .send({ ...validReview, type: 'podcast' });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('user names', () => {
+  test('registration stores optional names and login returns them', async () => {
+    const reg = await request(app)
+      .post('/api/users')
+      .send({ login: 'carol', password: 'Password123!', firstName: 'Carol', lastName: 'Danvers' });
+    expect(reg.status).toBe(201);
+    expect(reg.body.user.firstName).toBe('Carol');
+
+    const res = await request(app)
+      .post('/api/auth/login')
+      .send({ login: 'carol', password: 'Password123!' });
+    expect(res.body.firstName).toBe('Carol');
+    expect(res.body.lastName).toBe('Danvers');
+    expect(typeof res.body.token).toBe('string');
+  });
+});

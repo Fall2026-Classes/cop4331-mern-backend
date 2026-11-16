@@ -7,7 +7,7 @@ const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // Clients may only send these fields. userId always comes from the token.
-const EDITABLE_FIELDS = ['movieTitle', 'rating', 'description'];
+const EDITABLE_FIELDS = ['movieTitle', 'rating', 'description', 'type', 'year', 'watchedOn'];
 
 function pickEditable(body) {
   const picked = {};
@@ -43,7 +43,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create a review for the signed-in user.
-// In:  { movieTitle, rating, description }
+// In:  { movieTitle, rating, description, type?, year?, watchedOn? }
 // Out: 201 review | 400 invalid input
 router.post('/', async (req, res) => {
   try {
@@ -75,7 +75,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update one of the signed-in user's reviews.
-// In:  any of { movieTitle, rating, description }
+// In:  any of { movieTitle, rating, description, type, year, watchedOn }
 // Out: 200 review | 400 invalid input | 404
 router.patch('/:id', async (req, res) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
